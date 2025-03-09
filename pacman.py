@@ -1,12 +1,13 @@
 import pygame
 from pygame.locals import *
+from pacmanFSM import PacmanFSM
 from vector import Vector2
 from constants import *
 from entity import Entity
 from sprites import PacmanSprites
 
 class Pacman(Entity):
-    def __init__(self, node):
+    def __init__(self, node, nodes):
         Entity.__init__(self, node )
         self.name = PACMAN    
         self.color = YELLOW
@@ -14,7 +15,8 @@ class Pacman(Entity):
         self.setBetweenNodes(LEFT)
         self.alive = True
         self.sprites = PacmanSprites(self)
-
+        self.fsm = PacmanFSM(self, nodes)
+        
     def reset(self):
         Entity.reset(self)
         self.direction = LEFT
@@ -26,11 +28,21 @@ class Pacman(Entity):
     def die(self):
         self.alive = False
         self.direction = STOP
+    
+    def setGhosts(self, ghosts):
+        self.ghosts = ghosts
 
-    def update(self, dt):	
+    def setPellets(self, pellets):
+        self.pellets = pellets
+
+    def update(self, dt):
+        self.fsm.update(dt, self.ghosts, self.pellets)
         self.sprites.update(dt)
         self.position += self.directions[self.direction]*self.speed*dt
-        direction = self.getValidKey()
+        directions = self.validDirections()
+
+        direction = self.fsm.get_next_direction(directions)
+        
         if self.overshotTarget():
             self.node = self.target
             if self.node.neighbors[PORTAL] is not None:
@@ -41,24 +53,7 @@ class Pacman(Entity):
             else:
                 self.target = self.getNewTarget(self.direction)
 
-            if self.target is self.node:
-                self.direction = STOP
             self.setPosition()
-        else: 
-            if self.oppositeDirection(direction):
-                self.reverseDirection()
-
-    def getValidKey(self):
-        key_pressed = pygame.key.get_pressed()
-        if key_pressed[K_UP]:
-            return UP
-        if key_pressed[K_DOWN]:
-            return DOWN
-        if key_pressed[K_LEFT]:
-            return LEFT
-        if key_pressed[K_RIGHT]:
-            return RIGHT
-        return STOP  
 
     def eatPellets(self, pelletList):
         for pellet in pelletList:

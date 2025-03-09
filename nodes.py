@@ -27,6 +27,13 @@ class Node(object):
                 line_end = self.neighbors[n].position.asTuple()
                 pygame.draw.line(screen, WHITE, line_start, line_end, 4)
                 pygame.draw.circle(screen, RED, self.position.asInt(), 12)
+    
+    def getNeighbors(self):
+        n = []
+        for _, neighbor in self.neighbors.items():
+            if neighbor != None:
+                n.append(neighbor)
+        return n
 
 
 class NodeGroup(object):
@@ -126,6 +133,12 @@ class NodeGroup(object):
         if (x, y) in self.nodesLUT.keys():
             return self.nodesLUT[(x, y)]
         return None
+    
+    def getNodes(self):
+        return list(self.nodesLUT.values())
+    
+    def getNeighbors(self, node):
+        return list(node.getNeighbors())
 
     def denyAccess(self, col, row, direction, entity):
         node = self.getNodeFromTiles(col, row)
