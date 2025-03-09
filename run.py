@@ -58,7 +58,7 @@ class GameController(object):
         self.ghosts = GhostGroup(self.nodes.getStartTempNode(), self.pacman)
 
         self.pacman.setGhosts(self.ghosts.ghosts)
-        self.pacman.setPellets(self.pellets.pelletList)
+        self.pacman.setPellets(self.pellets.powerpellets)
 
         self.ghosts.pinky.setStartNode(self.nodes.getNodeFromTiles(*self.mazedata.obj.addOffset(2, 3)))
         self.ghosts.inky.setStartNode(self.nodes.getNodeFromTiles(*self.mazedata.obj.addOffset(0, 3)))
@@ -240,6 +240,7 @@ class GameController(object):
             y = SCREENHEIGHT - self.fruitCaptured[i].get_height()
             self.screen.blit(self.fruitCaptured[i], (x, y))
 
+        #pygame.draw.circle(self.screen, (30, 30, 30), self.pacman.position.asTuple(), 70)
         pygame.display.update()
 
 

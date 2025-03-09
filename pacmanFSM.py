@@ -12,7 +12,11 @@ class PacmanFSM(object):
     def update(self, dt, ghosts, pellets):
         if self.state == NORMAL:
             if self.ghost_nearby(ghosts):
-                self.change_state(FLEE)
+                if self.pellet_eaten(pellets):
+                    self.change_state(EAT)
+                    self.timer = 5
+                else:
+                    self.change_state(FLEE)
 
             elif self.pellet_eaten(pellets):
                 self.change_state(EAT)
@@ -21,6 +25,9 @@ class PacmanFSM(object):
         elif self.state == FLEE:
             if not self.ghost_nearby(ghosts):
                 self.change_state(NORMAL)
+            elif self.pellet_eaten(pellets):
+                    self.change_state(EAT)
+                    self.timer = 5
 
         elif self.state == EAT:
             self.timer -= dt
@@ -49,7 +56,7 @@ class PacmanFSM(object):
                 return True
         return False  
     
-    def get_next_direction(self, valid_directions):
+    def get_next_direction(self, valid_directions, ghosts, pellets):
         if self.state == NORMAL:
             return self.get_target_direction(valid_directions)  # Move towards goal
         elif self.state == FLEE:

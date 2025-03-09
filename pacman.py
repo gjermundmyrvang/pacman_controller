@@ -41,7 +41,7 @@ class Pacman(Entity):
         self.position += self.directions[self.direction]*self.speed*dt
         directions = self.validDirections()
 
-        direction = self.fsm.get_next_direction(directions)
+        direction = self.fsm.get_next_direction(directions, self.ghosts, self.pellets)
         
         if self.overshotTarget():
             self.node = self.target
