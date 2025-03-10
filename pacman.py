@@ -11,17 +11,17 @@ class Pacman(Entity):
         Entity.__init__(self, node )
         self.name = PACMAN    
         self.color = YELLOW
-        self.direction = LEFT
-        self.setBetweenNodes(LEFT)
         self.alive = True
         self.sprites = PacmanSprites(self)
         self.fsm = PacmanFSM(self, nodes)
+        self.direction = LEFT
+        self.setBetweenNodes(self.direction)
         self.nodes = nodes
         
     def reset(self):
         Entity.reset(self)
         self.direction = LEFT
-        self.setBetweenNodes(LEFT)
+        self.setBetweenNodes(self.direction)
         self.alive = True
         self.image = self.sprites.getStartImage()
         self.sprites.reset()
@@ -35,22 +35,24 @@ class Pacman(Entity):
 
     def setPellets(self, pellets):
         self.pellets = pellets
-        print(pellets[0].node.neighbors)
-
+    
+    def setPowerPellets(self, powerPellets):
+        self.powerPellets = powerPellets
+ 
     def update(self, dt):
-        self.fsm.update(dt, self.ghosts, self.pellets)
+        self.fsm.update(dt, self.ghosts, self.powerPellets)
         self.sprites.update(dt)
-        self.position += self.directions[self.direction]*self.speed*dt
-        
-        directions = self.validDirections()
-        direction = self.fsm.get_next_direction(directions, self.ghosts, self.pellets)
+
+        self.position += self.directions[self.direction] * self.speed * dt
         
         if self.overshotTarget():
             self.node = self.target
+            directions = self.validDirections()
+            direction = self.fsm.get_next_direction(directions, self.ghosts, self.powerPellets, self.pellets)
             if self.node.neighbors[PORTAL] is not None:
                 self.node = self.node.neighbors[PORTAL]
             self.target = self.getNewTarget(direction)
-            if self.target is not self.node:
+            if self.target != self.node:
                 self.direction = direction
             else:
                 self.target = self.getNewTarget(self.direction)

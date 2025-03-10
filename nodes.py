@@ -11,10 +11,10 @@ class Node(object):
                        DOWN:[PACMAN, BLINKY, PINKY, INKY, CLYDE, FRUIT], 
                        LEFT:[PACMAN, BLINKY, PINKY, INKY, CLYDE, FRUIT], 
                        RIGHT:[PACMAN, BLINKY, PINKY, INKY, CLYDE, FRUIT]}
-        self.g = float('inf')  
-
+        self.w = float('inf')
+    
     def __lt__(self, other):
-        return self.g < other.g
+        return self.w < other.w
 
     def denyAccess(self, direction, entity):
         if entity.name in self.access[direction]:
@@ -115,7 +115,7 @@ class NodeGroup(object):
                              ['+','X','.','X','+'],
                              ['+','.','+','.','+'],
                              ['+','X','X','X','+']])
-
+        
         self.createNodeTable(homedata, xoffset, yoffset)
         self.connectHorizontally(homedata, xoffset, yoffset)
         self.connectVertically(homedata, xoffset, yoffset)

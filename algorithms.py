@@ -2,8 +2,8 @@ from collections import defaultdict
 from heapq import heappop, heappush
 
 def astar(startnode, target):
-    startnode.g = 0  
     dist = defaultdict(lambda: float('inf'))
+    startnode.w = 0
     parents = {startnode: None}
     dist[startnode] = 0
     queue = [(0, startnode)]
@@ -20,8 +20,8 @@ def astar(startnode, target):
         for v in neighbors:
             cost = dist[u] + heuristic(u, v)
             if cost < dist[v]:
+                v.w = cost
                 dist[v] = cost
-                v.g = cost 
                 parents[v] = u
                 heappush(queue, (cost, v)) 
 
@@ -41,7 +41,7 @@ def dijkstra_avoid(startnode, target, ghosts):
              return reconstruct_path(parents, startnode, target)
         neighbors = u.getNeighbors()
         for v in neighbors:
-            extra_cost = 1000 if v in ghosts else 0
+            extra_cost = 1000 if v in ghosts else 1
             cost = dist[u] + extra_cost
             if cost < dist[v]:
                 dist[v] = cost
