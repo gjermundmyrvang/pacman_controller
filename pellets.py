@@ -1,4 +1,5 @@
 import pygame
+from nodes import Node
 from vector import Vector2
 from constants import *
 import numpy as np
@@ -21,13 +22,14 @@ class Pellet(object):
 
 
 class PowerPellet(Pellet):
-    def __init__(self, row, column):
+    def __init__(self, row, column, node):
         Pellet.__init__(self, row, column)
         self.name = POWERPELLET
         self.radius = int(8 * TILEWIDTH / 16)
         self.points = 50
         self.flashTime = 0.2
         self.timer= 0
+        self.node = node
         
     def update(self, dt):
         self.timer += dt
@@ -37,7 +39,8 @@ class PowerPellet(Pellet):
 
 
 class PelletGroup(object):
-    def __init__(self, pelletfile):
+    def __init__(self, pelletfile, nodes):
+        self.nodes = nodes
         self.pelletList = []
         self.powerpellets = []
         self.createPelletList(pelletfile)
@@ -54,9 +57,14 @@ class PelletGroup(object):
                 if data[row][col] in ['.', '+']:
                     self.pelletList.append(Pellet(row, col))
                 elif data[row][col] in ['P', 'p']:
-                    pp = PowerPellet(row, col)
+                    n = self.nodes.getNodeFromTiles(col, row)
+                    print(n)
+                    pp = PowerPellet(row, col, n)
                     self.pelletList.append(pp)
                     self.powerpellets.append(pp)
+    
+    def constructKey(self, x, y):
+        return x * TILEWIDTH, y * TILEHEIGHT
                     
     def readPelletfile(self, textfile):
         return np.loadtxt(textfile, dtype='<U1')

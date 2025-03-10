@@ -16,6 +16,7 @@ class Pacman(Entity):
         self.alive = True
         self.sprites = PacmanSprites(self)
         self.fsm = PacmanFSM(self, nodes)
+        self.nodes = nodes
         
     def reset(self):
         Entity.reset(self)
@@ -34,13 +35,14 @@ class Pacman(Entity):
 
     def setPellets(self, pellets):
         self.pellets = pellets
+        print(pellets[0].node.neighbors)
 
     def update(self, dt):
         self.fsm.update(dt, self.ghosts, self.pellets)
         self.sprites.update(dt)
         self.position += self.directions[self.direction]*self.speed*dt
+        
         directions = self.validDirections()
-
         direction = self.fsm.get_next_direction(directions, self.ghosts, self.pellets)
         
         if self.overshotTarget():

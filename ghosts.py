@@ -18,6 +18,15 @@ class Ghost(Entity):
         self.blinky = blinky
         self.homeNode = node
 
+    def __str__(self):
+        names = {
+            BLINKY: "Blinky",
+            PINKY: "Pinky",
+            INKY: "Inky",
+            CLYDE: "Clyde"
+        }
+        return names[self.name]
+
     def reset(self):
         Entity.reset(self)
         self.points = 200
