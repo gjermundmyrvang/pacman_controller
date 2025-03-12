@@ -40,7 +40,6 @@ class PacmanFSM(object):
             NORMAL: "Normal",
             FLEE: "Flee",
             EAT: "Eat",
-            SEARCH: "Search"
         }
         print(f"Pacman changing state: {state_names[self.state]} → {state_names[new_state]}")
         self.state = new_state
