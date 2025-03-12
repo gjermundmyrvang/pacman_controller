@@ -13,7 +13,7 @@ class Pacman(Entity):
         self.color = YELLOW
         self.alive = True
         self.sprites = PacmanSprites(self)
-        self.fsm = PacmanFSM(self, nodes)
+        self.fsm = PacmanFSM(self, nodes) # Initialize FSM
         self.direction = LEFT
         self.setBetweenNodes(self.direction)
         self.nodes = nodes
@@ -25,6 +25,7 @@ class Pacman(Entity):
         self.alive = True
         self.image = self.sprites.getStartImage()
         self.sprites.reset()
+        self.fsm.resetFSM()
 
     def die(self):
         self.alive = False
@@ -40,14 +41,16 @@ class Pacman(Entity):
         self.powerPellets = powerPellets
  
     def update(self, dt):
-        self.fsm.update(dt, self.ghosts, self.powerPellets)
         self.sprites.update(dt)
+        # Calling FSM update function to check if something triggers transition
+        self.fsm.update(dt, self.ghosts, self.powerPellets)
 
         self.position += self.directions[self.direction] * self.speed * dt
         
         if self.overshotTarget():
             self.node = self.target
             directions = self.validDirections()
+            # Getting direction from FSM which will be based on current state
             direction = self.fsm.get_next_direction(directions, self.ghosts, self.powerPellets, self.pellets)
             if self.node.neighbors[PORTAL] is not None:
                 self.node = self.node.neighbors[PORTAL]

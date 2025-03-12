@@ -2,6 +2,7 @@ import pygame
 from vector import Vector2
 from constants import *
 import numpy as np
+import random
 
 class Node(object):
     def __init__(self, x, y):
@@ -32,12 +33,16 @@ class Node(object):
                 pygame.draw.line(screen, WHITE, line_start, line_end, 4)
                 pygame.draw.circle(screen, RED, self.position.asInt(), 12)
     
+    
     def getNeighbors(self):
         n = []
         for _, neighbor in self.neighbors.items():
             if neighbor != None:
                 n.append(neighbor)
         return n
+    
+    def getNeighbor(self, direction):
+        return self.neighbors[direction]
 
 
 class NodeGroup(object):
@@ -51,6 +56,7 @@ class NodeGroup(object):
         self.connectHorizontally(data)
         self.connectVertically(data)
         self.homekey = None
+        self.homenodes = set()
 
     def readMazeFile(self, textfile):
         return np.loadtxt(textfile, dtype='<U1')
@@ -120,6 +126,13 @@ class NodeGroup(object):
         self.connectHorizontally(homedata, xoffset, yoffset)
         self.connectVertically(homedata, xoffset, yoffset)
         self.homekey = self.constructKey(xoffset+2, yoffset)
+
+        for row in list(range(homedata.shape[0])):
+            for col in list(range(homedata.shape[1])):
+                if homedata[row][col] in self.nodeSymbols:
+                    x, y = self.constructKey(xoffset + col, yoffset + row)
+                    self.homenodes.add(Node(x, y))
+
         return self.homekey
 
     def connectHomeNodes(self, homekey, otherkey, direction):     
@@ -143,6 +156,10 @@ class NodeGroup(object):
     
     def getNeighbors(self, node):
         return list(node.getNeighbors())
+    
+    def getRandomNode(self):
+        nodes = self.getNodes()
+        return random.choice(nodes)
 
     def denyAccess(self, col, row, direction, entity):
         node = self.getNodeFromTiles(col, row)

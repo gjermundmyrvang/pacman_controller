@@ -1,5 +1,7 @@
 import math
 
+from constants import TILEWIDTH
+
 class Vector2(object):
     def __init__(self, x=0, y=0):
         self.x = x
@@ -49,3 +51,10 @@ class Vector2(object):
 
     def __str__(self):
         return "<"+str(self.x)+", "+str(self.y)+">"
+    
+    def is_nearby(self, other, tiles_detect):
+        threshold = TILEWIDTH * tiles_detect
+        return (self - other).magnitudeSquared() < threshold**2
+    
+    def distance_to(self, other):
+        return (self - other).magnitudeSquared()

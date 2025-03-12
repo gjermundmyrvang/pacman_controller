@@ -56,7 +56,7 @@ class GameController(object):
         self.pellets = PelletGroup(self.mazedata.obj.name+".txt", self.nodes)
         self.pacman = Pacman(self.nodes.getNodeFromTiles(*self.mazedata.obj.pacmanStart), self.nodes)
         self.ghosts = GhostGroup(self.nodes.getStartTempNode(), self.pacman)
-
+  
         self.pacman.setGhosts(self.ghosts.ghosts)
         self.pacman.setPellets(self.pellets.pelletList)
         self.pacman.setPowerPellets(self.pellets.powerpellets)
@@ -80,7 +80,7 @@ class GameController(object):
         if not self.pause.paused:
             self.ghosts.update(dt)      
             if self.fruit is not None:
-                self.fruit.update(dt)
+                self.fruit.update(dt) 
             self.checkPelletEvents()
             self.checkGhostEvents()
             self.checkFruitEvents()

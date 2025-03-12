@@ -5,7 +5,7 @@ from constants import *
 import numpy as np
 
 class Pellet(object):
-    def __init__(self, row, column):
+    def __init__(self, row, column, node):
         self.name = PELLET
         self.position = Vector2(column*TILEWIDTH, row*TILEHEIGHT)
         self.color = WHITE
@@ -13,6 +13,7 @@ class Pellet(object):
         self.collideRadius = 2 * TILEWIDTH / 16
         self.points = 10
         self.visible = True
+        self.node = node
         
     def render(self, screen):
         if self.visible:
@@ -23,13 +24,12 @@ class Pellet(object):
 
 class PowerPellet(Pellet):
     def __init__(self, row, column, node):
-        Pellet.__init__(self, row, column)
+        Pellet.__init__(self, row, column, node)
         self.name = POWERPELLET
         self.radius = int(8 * TILEWIDTH / 16)
         self.points = 50
         self.flashTime = 0.2
         self.timer= 0
-        self.node = node
         
     def update(self, dt):
         self.timer += dt
@@ -55,10 +55,10 @@ class PelletGroup(object):
         for row in range(data.shape[0]):
             for col in range(data.shape[1]):
                 if data[row][col] in ['.', '+']:
-                    self.pelletList.append(Pellet(row, col))
+                    n = self.nodes.getNodeFromTiles(col, row)
+                    self.pelletList.append(Pellet(row, col, n))
                 elif data[row][col] in ['P', 'p']:
                     n = self.nodes.getNodeFromTiles(col, row)
-                    print(n)
                     pp = PowerPellet(row, col, n)
                     self.pelletList.append(pp)
                     self.powerpellets.append(pp)
