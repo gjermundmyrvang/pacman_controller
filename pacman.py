@@ -15,6 +15,7 @@ class Pacman(Entity):
         self.sprites = PacmanSprites(self)
         self.fsm = PacmanFSM(self, nodes) # Initialize FSM
         self.direction = LEFT
+        self.directionMethod = self.pacmanDirection
         self.setBetweenNodes(self.direction)
         self.nodes = nodes
         
@@ -51,7 +52,7 @@ class Pacman(Entity):
             self.node = self.target
             directions = self.validDirections()
             # Getting direction from FSM which will be based on current state
-            direction = self.fsm.get_next_direction(directions, self.ghosts, self.powerPellets, self.pellets)
+            direction = self.directionMethod(directions)
             if self.node.neighbors[PORTAL] is not None:
                 self.node = self.node.neighbors[PORTAL]
             self.target = self.getNewTarget(direction)
@@ -61,6 +62,9 @@ class Pacman(Entity):
                 self.target = self.getNewTarget(self.direction)
 
             self.setPosition()
+
+    def pacmanDirection(self, directions):
+        return self.fsm.get_next_direction(directions, self.ghosts, self.powerPellets, self.pellets)
 
     def eatPellets(self, pelletList):
         for pellet in pelletList:

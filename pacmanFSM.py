@@ -49,6 +49,8 @@ class PacmanFSM(object):
         if self.state == NORMAL:
             return self.get_normal_pellets(pellets, valid_directions)
         elif self.state == FLEE:
+            if self.num_ppellet_eaten == len(powerPellets):
+                return self.get_corner_direction(ghosts, valid_directions)
             return self.get_escape_direction(powerPellets, ghosts, valid_directions)
         elif self.state == EAT:
             return self.get_chase_direction(ghosts, valid_directions)
@@ -93,15 +95,15 @@ class PacmanFSM(object):
         goal = next_node.position - self.pacman.position  
         return self.get_direction(goal)
     
-    # Targets closest powerpellet
-    def get_pellet_direction(self, powerpellets, directions):
-        target = self.get_nearby_power_pellet2(powerpellets) if self.num_ppellet_eaten == len(powerpellets) else self.get_nearby_power_pellet(powerpellets)
+    # Targets safe corner node
+    def get_corner_direction(self, ghosts, directions):
+        target = self.find_safe_corner(ghosts)
 
         if target is None:
             print("No valid powerpellets found!")
             return random.choice(directions)  
         
-        path = astar(self.pacman.node, target)
+        path = astar_avoid(self.pacman.node, target, ghosts)
         
         if not path or len(path) < 2:
             print("Returning pac-dir in chase")
@@ -199,7 +201,7 @@ class PacmanFSM(object):
     def get_nearby_ghost(self, ghosts):
         distances = []
         for g in ghosts:
-            if self.is_in_home(g):
+            if self.is_in_home(g) or g.mode.current != FREIGHT:
                 continue
             dist = self.pacman.position.distance_to(g.position)
             distances.append((dist, g))  
@@ -238,7 +240,7 @@ class PacmanFSM(object):
     def ghost_close(self, ghosts):
         for ghost in ghosts:
             if ghost.mode.current == CHASE:
-                if self.pacman.position.is_nearby(ghost.position, 8):
+                if self.pacman.position.is_nearby(ghost.position, 8) and ghost.direction != self.pacman.direction:
                     return True
         return False
         
@@ -255,3 +257,33 @@ class PacmanFSM(object):
             if g.mode.current == CHASE:
                 return True
         return False
+    
+    def is_corner(self, node):
+        walls = 0
+        for direction in [UP, DOWN, LEFT, RIGHT]:
+            # Check if the neighbor in the current direction is a wall or out of bounds
+            neighbor = node.getNeighbor(direction)
+            if neighbor is None or self.nodes.getNodeFromTiles(neighbor.position.x // TILEWIDTH, neighbor.position.y // TILEHEIGHT) is None:
+                walls += 1
+        return walls >= 2
+
+    def get_distance_to_ghost(self, node, ghosts):
+        min_distance = float('inf')
+        for ghost in ghosts:
+            gx, gy = ghost.position.x, ghost.position.y
+            distance = abs(gx - node.position.x) + abs(gy - node.position.y)  
+            min_distance = min(min_distance, distance)
+        return min_distance
+
+    def find_safe_corner(self, ghosts):
+        corners = [node for node in self.nodes.getNodes() if self.is_corner(node)]
+        
+        safest_corner = None
+        max_distance = -float('inf')
+        for corner in corners:
+            distance = self.get_distance_to_ghost(corner, ghosts)
+            if distance > max_distance:
+                max_distance = distance
+                safest_corner = corner
+        
+        return safest_corner
