@@ -1,7 +1,9 @@
 import pygame
-from entity import Entity
+
 from constants import *
+from entity import Entity
 from sprites import FruitSprites
+
 
 class Fruit(Entity):
     def __init__(self, node, level=0):

@@ -1,7 +1,8 @@
-import pygame
-from constants import *
 import numpy as np
+import pygame
+
 from animation import Animator
+from constants import *
 
 BASETILEWIDTH = 16
 BASETILEHEIGHT = 16

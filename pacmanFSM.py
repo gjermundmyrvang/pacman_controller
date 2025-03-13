@@ -1,8 +1,10 @@
+import random
+import pygame
+
 from algorithms import astar, astar_avoid
 from constants import *
-import random
-
 from vector import Vector2
+
 
 class PacmanFSM(object):
     def __init__(self, pacman, nodes):
@@ -47,7 +49,7 @@ class PacmanFSM(object):
     # Returns a direction based on state
     def get_next_direction(self, valid_directions, ghosts, powerPellets, pellets):    
         if self.state == NORMAL:
-            return self.get_normal_pellets(pellets, valid_directions)
+            return self.get_normal_pellets(pellets, ghosts, valid_directions)
         elif self.state == FLEE:
             if self.num_ppellet_eaten == len(powerPellets):
                 return self.get_corner_direction(ghosts, valid_directions)
@@ -56,12 +58,12 @@ class PacmanFSM(object):
             return self.get_chase_direction(ghosts, valid_directions)
         
     # Chasing normal pellets using basic goal direction
-    def get_normal_pellets(self, pellets, directions):
+    def get_normal_pellets(self, pellets, ghosts, directions):
         goal = self.get_nearby_pellet(pellets)
         return self.goal_direction(directions, goal)
     
     # Targets powerpellets while avoiding ghosts
-    def get_escape_direction(self, powerPellets, ghosts, directions):   
+    def get_escape_direction(self, powerPellets, ghosts, directions):
         target = self.get_nearby_power_pellet2(powerPellets) if self.num_ppellet_eaten == len(powerPellets) else self.get_nearby_power_pellet(powerPellets)
 
         if target == None:
@@ -100,13 +102,13 @@ class PacmanFSM(object):
         target = self.find_safe_corner(ghosts)
 
         if target is None:
-            print("No valid powerpellets found!")
+            print("No valid corner found!")
             return random.choice(directions)  
         
         path = astar_avoid(self.pacman.node, target, ghosts)
         
         if not path or len(path) < 2:
-            print("Returning pac-dir in chase")
+            print("Returning pac-dir in corner")
             return random.choice(directions)
 
         next_node = path[1]        
@@ -257,7 +259,7 @@ class PacmanFSM(object):
             if g.mode.current == CHASE:
                 return True
         return False
-    
+      
     def is_corner(self, node):
         walls = 0
         for direction in [UP, DOWN, LEFT, RIGHT]:

@@ -1,10 +1,12 @@
 import pygame
 from pygame.locals import *
-from pacmanFSM import PacmanFSM
-from vector import Vector2
+
 from constants import *
 from entity import Entity
+from pacmanFSM import PacmanFSM
 from sprites import PacmanSprites
+from vector import Vector2
+
 
 class Pacman(Entity):
     def __init__(self, node, nodes):

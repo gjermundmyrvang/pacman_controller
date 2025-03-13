@@ -1,8 +1,10 @@
+import numpy as np
 import pygame
+
+from constants import *
 from nodes import Node
 from vector import Vector2
-from constants import *
-import numpy as np
+
 
 class Pellet(object):
     def __init__(self, row, column, node):

@@ -1,5 +1,6 @@
-from vector import Vector2
 from constants import *
+from vector import Vector2
+
 
 class MazeBase(object):
     def __init__(self):

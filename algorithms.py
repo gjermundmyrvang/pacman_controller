@@ -1,6 +1,7 @@
 from collections import defaultdict
 from heapq import heappop, heappush
 
+
 # A* for hunting ghosts
 def astar(startnode, target):
     dist = defaultdict(lambda: float('inf'))
