@@ -44,6 +44,9 @@ class Node(object):
                 n.append(neighbor)
         return n
     
+    def getNeighbor(self, direction):
+        return self.neighbors[direction]
+    
 
 class NodeGroup(object):
     def __init__(self, level):
