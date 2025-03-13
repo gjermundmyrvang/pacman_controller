@@ -75,7 +75,8 @@ class PacmanFSM(object):
         if not path or len(path) < 2:
             print("Returning random in escape")
             return random.choice(directions)
-           
+        
+        self.pacman.path = path
         next_node = path[1]
         goal = next_node.position - self.pacman.position  
         return self.get_direction(goal)
@@ -93,6 +94,7 @@ class PacmanFSM(object):
             print("Returning pac-dir in chase")
             return random.choice(directions)
 
+        self.pacman.path = path
         next_node = path[1]        
         goal = next_node.position - self.pacman.position  
         return self.get_direction(goal)
@@ -111,6 +113,7 @@ class PacmanFSM(object):
             print("Returning pac-dir in corner")
             return random.choice(directions)
 
+        self.pacman.path = path
         next_node = path[1]        
         goal = next_node.position - self.pacman.position  
         return self.get_direction(goal)

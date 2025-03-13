@@ -242,8 +242,20 @@ class GameController(object):
             y = SCREENHEIGHT - self.fruitCaptured[i].get_height()
             self.screen.blit(self.fruitCaptured[i], (x, y))
 
-        #pygame.draw.circle(self.screen, (30, 30, 30), self.pacman.position.asTuple(), 70)
+        self.renderPath()
         pygame.display.update()
+    
+    def renderPath(self):
+        if len(self.pacman.path) >= 2:
+            path_length = len(self.pacman.path)
+            for i, node in enumerate(self.pacman.path):
+                t = i / path_length  
+                color = (int(50 + 150 * (1 - t)), int(200 + 55 * (1 - t)), 255)
+                pygame.draw.circle(self.screen, color, node.position.asTuple(), max(4, 10 - i // 2)) 
+                if i > 0:
+                    pygame.draw.line(self.screen, color, 
+                                    self.pacman.path[i - 1].position.asTuple(), 
+                                    node.position.asTuple(), 3)
 
 
 if __name__ == "__main__":

@@ -20,6 +20,7 @@ class Pacman(Entity):
         self.directionMethod = self.pacmanDirection
         self.setBetweenNodes(self.direction)
         self.nodes = nodes
+        self.path = []
         
     def reset(self):
         Entity.reset(self)
